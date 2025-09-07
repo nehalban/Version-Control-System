@@ -1,5 +1,5 @@
+#include "system.hpp"
 #include <sstream>
-#include "file.hpp"
 
 int main() {
     std::string line;
@@ -60,5 +60,8 @@ int main() {
                 std::cout << "Unknown command: " << command << std::endl;
             }
         } 
+    }
+    for (File* file_ptr : Allfiles) {
+        delete file_ptr;
     }
 }

@@ -23,6 +23,7 @@ struct File{
         std::cout<<active_version->content<<std::endl;
     }
     void UPDATE(std::string content){
+        last_modified = time(0);
         if(active_version->snapshot_timestamp){
             active_version->children.push_back(new_version(content, active_version));
         }
@@ -63,47 +64,7 @@ struct File{
             std::cout<<temp->version_id<<' '<<temp->snapshot_timestamp<<' '<<temp->message<<std::endl;
         }
     }
-};
-
-File* active_file;
-std::vector<File> Allfiles;
-Dict filenameMap;
-void CREATE(std::string filename){
-    active_file = new File(filename);
-    Allfiles.push_back(*active_file);
-    filenameMap.insert(*active_file);
+    ~File() {
+    delete root; // This starts the chain reaction to delete all TreeNodes
 }
-
-bool modified_after(const File& A, const File& B){
-    return A.last_modified>B.last_modified;
 };
-bool has_more_versions(const File& A, const File& B){
-    return A.total_versions>B.total_versions;
-};
-
-void syswide(bool (*comp)(const File&A, const File& B), int num){
-    Heap H(comp);
-    if(num<=Allfiles.size()){
-        std::sort(Allfiles.begin(), Allfiles.end(), comp);
-        for(File file:Allfiles) std::cout<<file.filename<<' ';
-        std::cout<<std::endl;
-    }
-    else{
-        for (int i = 0; i < num; i++){
-            H.push(Allfiles[i]);
-        }
-        for (int i = num; i < Allfiles.size(); i++){
-            if(comp(Allfiles[i], H.top())){
-                H.pop();
-                H.push(Allfiles[i]);
-            }
-        }
-        for (int i = 0; i < num; i++)
-        {
-            std::cout<<H.pop().filename<<' ';
-        }
-        std::cout<<std::endl;
-        
-    }
-}
-
