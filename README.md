@@ -5,11 +5,13 @@ Entry Number: 2024MT10788
 
 ## Project Overview
 This project is an in-memory, Git-inspired version control system. It allows for the creation and manipulation of files, each with a complete version history represented as a tree. Users can create new versions, save immutable snapshots(like commits), and navigate through the history of a file. It also supports system-wide analytics to identify recently modified files and files with the most extensive version histories.
-
+## Data structures and Classes
 I implemented all core data structures from scratch. The following custom structures were used:
-Tree (TreeNode): Manages the branching version history for each file. Each version of a file is represented as a node in tree.
-HashMap (Hashmap, Dict): Provides O(1) average-time lookup for versions by their ID and for files by their filename.
-Heap (Heap): Efficiently finds the top 'k' files for system-wide analytics commands without needing to sort the entire dataset.
+### Tree (TreeNode):
+Manages the branching version history for each file. Each version of a file is represented as a node in tree.
+### HashMap (Hashmap, Dict):
+Provides O(1) average-time lookup for versions by their ID and for files by their filename.
+* Heap (Heap): Efficiently finds the top 'k' files for system-wide analytics commands without needing to sort the entire dataset.
 
 ## How to Compile and Run
 Prerequisites: A C++ compiler (g++ recommended).
