@@ -1,20 +1,22 @@
 # COL106 Long Assignment - Version Control System
 
-Author: Nehal Bansal
+Author: Nehal Bansal  
 Entry Number: 2024MT10788
 
 ## Project Overview
 This project is an in-memory, Git-inspired version control system. It allows for the creation and manipulation of files, each with a complete version history represented as a tree. Users can create new versions, save immutable snapshots(like commits), and navigate through the history of a file. It also supports system-wide analytics to identify recently modified files and files with the most extensive version histories.
 ## Data structures and Classes
 I implemented all core data structures from scratch. The following custom structures were used:
-### Tree (TreeNode):
+### Tree (TreeNode)
 Manages the branching version history for each file. Each version of a file is represented as a node in tree.
-### HashMap (Hashmap, Dict):
+### HashMap (Hashmap, Dict)
 Provides O(1) average-time lookup for versions by their ID and for files by their filename.
-* Heap (Heap): Efficiently finds the top 'k' files for system-wide analytics commands without needing to sort the entire dataset.
+## Heap (Heap)
+Efficiently finds the top 'k' files for system-wide analytics commands without needing to sort the entire dataset.
 
 ## How to Compile and Run
-Prerequisites: A C++ compiler (g++ recommended).
+You will need a C++ compiler like g++.
+
 Compile: A shell script is provided for easy compilation. Run the following command in your terminal:
 ```sh compile.sh```
 
@@ -25,18 +27,18 @@ Interact: The program will now wait for input. You can start typing commands as 
 Command Reference
 
 ## Core File Operations
-CREATE <filename>
+* ```CREATE <filename>```
 Initializes a new file with the given name. Creates a root version (ID 0) with empty content. This initial version is automatically marked as a snapshot.
-READ <filename>
+* ```READ <filename>```
 Prints the content of the currently active version of the specified file to the console.
-UPDATE <filename> <content>
-Replaces the entire content of the active version with <content>.
+* ```UPDATE <filename> <content>```
+Replaces the entire content of the active version with <content>.  
 Versioning Logic: If the active version is a snapshot (immutable), a new child version is created to store the new content. If the active version is not a snapshot, its content is modified in place.
-INSERT <filename> <content>
+* ```INSERT <filename> <content>```
 Appends <content> to the end of the active version's existing content. It follows the same versioning logic as UPDATE.
 SNAPSHOT <filename> <message>
 Marks the currently active version as a snapshot, making its content immutable. The provided <message> is stored with the version for historical reference.
-ROLLBACK <filename> [version_id]
+* ROLLBACK <filename> [version_id]
 Changes the active version pointer.
 With version_id: The active version is set to the version corresponding to the given ID.
 Without version_id: The active version is set to the parent of the current active version.
