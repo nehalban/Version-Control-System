@@ -1,9 +1,9 @@
-#COL106 Long Assignment - Version Control System
+# COL106 Long Assignment - Version Control System
 
 Author: Nehal Bansal
 Entry Number: 2024MT10788
 
-##Project Overview
+## Project Overview
 This project is an in-memory, Git-inspired version control system. It allows for the creation and manipulation of files, each with a complete version history represented as a tree. Users can create new versions, save immutable snapshots(like commits), and navigate through the history of a file. It also supports system-wide analytics to identify recently modified files and files with the most extensive version histories.
 
 I implemented all core data structures from scratch. The following custom structures were used:
@@ -11,18 +11,18 @@ Tree (TreeNode): Manages the branching version history for each file. Each versi
 HashMap (Hashmap, Dict): Provides O(1) average-time lookup for versions by their ID and for files by their filename.
 Heap (Heap): Efficiently finds the top 'k' files for system-wide analytics commands without needing to sort the entire dataset.
 
-##How to Compile and Run
+## How to Compile and Run
 Prerequisites: A C++ compiler (g++ recommended).
 Compile: A shell script is provided for easy compilation. Run the following command in your terminal:
-sh compile.sh
+```sh compile.sh```
 
 Execute: After successful compilation, an executable named filesystem will be created. Run it with:
-./filesystem
+```./filesystem```
 
 Interact: The program will now wait for input. You can start typing commands as specified below. To exit, use Ctrl+D.
 Command Reference
 
-##Core File Operations
+## Core File Operations
 CREATE <filename>
 Initializes a new file with the given name. Creates a root version (ID 0) with empty content. This initial version is automatically marked as a snapshot.
 READ <filename>
@@ -46,7 +46,7 @@ Lists the num files that have been modified most recently. The output is a space
 BIGGEST_TREES [num]
 Lists the num files that have the largest number of versions. The output is a space-separated list of filenames, sorted in descending order of their total version count.
 
-##Handling of Edge Cases and Tie-Breaking
+## Handling of Edge Cases and Tie-Breaking
 The system is designed to handle various edge cases as follows:
 Invalid Command: If an unrecognized command is entered, the system prints an "Unknown command" message and waits for the next input.
 Operations on Non-existent Files: If a command (e.g., READ, UPDATE) is used with a filename that does not exist, the program may encounter a segmentation fault as the lookup will return a nullptr. It is expected that files are created with CREATE before being used.
