@@ -71,7 +71,7 @@ public:
 };
 
 class Hashmap {
-    static constexpr int N = 17; // Prime number for better distribution
+    static constexpr int N = 50;
     std::vector<LinkedList*> hashtable;
     
 public:

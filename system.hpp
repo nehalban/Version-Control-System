@@ -75,7 +75,7 @@ public:
 };
 
 class Dict {
-    static constexpr int N = 53; //Prime
+    static constexpr int N = 17; //Prime
     std::vector<std::vector<File*>> hashtable;
     
 public:

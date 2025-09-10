@@ -1,0 +1,220 @@
+# TEST SUITE FOR TIME-TRAVELLING FILE SYSTEM
+
+## Test 1: Basic File Operations
+CREATE file1
+READ file1
+INSERT file1 Hello World
+READ file1
+UPDATE file1 New Content
+READ file1
+SNAPSHOT file1 First snapshot
+INSERT file1 Additional text
+READ file1
+
+## Test 2: Version History and Rollback
+CREATE file2
+INSERT file2 Version 0 content
+SNAPSHOT file2 Initial version
+INSERT file2 Version 1 content
+SNAPSHOT file2 Second version
+INSERT file2 Version 2 content
+SNAPSHOT file2 Third version
+HISTORY file2
+ROLLBACK file2 1
+READ file2
+ROLLBACK file2
+READ file2
+ROLLBACK file2 2
+READ file2
+
+## Test 3: Branching Versions
+CREATE file3
+INSERT file3 Root content
+SNAPSHOT file3 Root snapshot
+INSERT file3 Branch A content
+SNAPSHOT file3 Branch A
+ROLLBACK file3 0
+INSERT file3 Branch B content
+SNAPSHOT file3 Branch B
+HISTORY file3
+
+## Test 4: In-place Modification vs New Version
+CREATE file4
+INSERT file4 Initial content
+READ file4
+UPDATE file4 Modified content (in-place)
+READ file4
+SNAPSHOT file4 Make immutable
+UPDATE file4 New version content
+READ file4
+ROLLBACK file4
+READ file4
+
+## Test 5: System Analytics - Recent Files
+CREATE recent1
+CREATE recent2
+CREATE recent3
+UPDATE recent1 Updated first
+UPDATE recent3 Updated second
+UPDATE recent2 Updated third
+RECENT_FILES 2
+RECENT_FILES 5
+
+## Test 6: System Analytics - Biggest Trees
+CREATE tree1
+INSERT tree1 v1
+SNAPSHOT tree1 s1
+INSERT tree1 v2
+SNAPSHOT tree1 s2
+CREATE tree2
+INSERT tree2 v1
+SNAPSHOT tree2 s1
+INSERT tree2 v2
+SNAPSHOT tree2 s2
+INSERT tree2 v3
+SNAPSHOT tree2 s3
+CREATE tree3
+INSERT tree3 only version
+BIGGEST_TREES 2
+BIGGEST_TREES 10
+
+## Test 7: Edge Case - Empty Content
+CREATE empty
+READ empty
+SNAPSHOT empty Empty file
+INSERT empty 
+READ empty
+UPDATE empty 
+READ empty
+
+## Test 8: Edge Case - Multiple Snapshots
+CREATE multi
+INSERT multi Content
+SNAPSHOT multi First
+SNAPSHOT multi Second attempt (should fail)
+
+## Test 9: Edge Case - Rollback from Root
+CREATE root_test
+ROLLBACK root_test
+ROLLBACK root_test 0
+READ root_test
+
+## Test 10: Edge Case - Invalid Operations
+READ nonexistent
+UPDATE nonexistent Some content
+ROLLBACK nonexistent
+CREATE duplicate
+CREATE duplicate
+
+## Test 11: Complex Branching Scenario
+CREATE complex
+INSERT complex A
+SNAPSHOT complex Point A
+INSERT complex AB
+SNAPSHOT complex Point AB
+INSERT complex ABC
+ROLLBACK complex 1
+INSERT complex ABD
+SNAPSHOT complex Point ABD
+ROLLBACK complex 1
+INSERT complex ABE
+HISTORY complex
+
+## Test 12: Long Content and Special Characters
+CREATE special
+INSERT special Line 1 with spaces    and     tabs
+INSERT special 
+Line 2 with newline
+INSERT special Special chars: !@#$%^&*()_+-=[]{}|;':",.<>?/
+READ special
+SNAPSHOT special Special content saved
+UPDATE special Single line replacement
+READ special
+
+## Test 13: Stress Test - Many Versions
+CREATE stress
+INSERT stress v0
+SNAPSHOT stress s0
+INSERT stress v1
+SNAPSHOT stress s1
+INSERT stress v2
+SNAPSHOT stress s2
+INSERT stress v3
+SNAPSHOT stress s3
+INSERT stress v4
+SNAPSHOT stress s4
+INSERT stress v5
+SNAPSHOT stress s5
+INSERT stress v6
+SNAPSHOT stress s6
+INSERT stress v7
+SNAPSHOT stress s7
+INSERT stress v8
+SNAPSHOT stress s8
+INSERT stress v9
+SNAPSHOT stress s9
+HISTORY stress
+ROLLBACK stress 5
+READ stress
+ROLLBACK stress 0
+READ stress
+ROLLBACK stress 9
+READ stress
+
+## Test 14: Analytics with No Files
+RECENT_FILES 5
+BIGGEST_TREES 5
+
+## Test 15: Analytics with Ties
+CREATE tie1
+CREATE tie2
+CREATE tie3
+UPDATE tie1 same time 1
+UPDATE tie2 same time 2
+UPDATE tie3 same time 3
+RECENT_FILES 3
+
+## Test 16: Invalid Version IDs
+CREATE invalid
+INSERT invalid content
+SNAPSHOT invalid saved
+ROLLBACK invalid 999
+ROLLBACK invalid -1
+
+## Test 17: Mixed Operations
+CREATE mixed
+INSERT mixed Start
+UPDATE mixed Replace
+INSERT mixed  Append
+READ mixed
+SNAPSHOT mixed Checkpoint
+ROLLBACK mixed
+INSERT mixed After rollback
+UPDATE mixed Final
+HISTORY mixed
+
+## Test 18: Testing HashMap Collisions
+CREATE a
+CREATE b
+CREATE k
+CREATE t
+INSERT a content a
+INSERT b content b
+INSERT k content k
+INSERT t content t
+READ a
+READ b
+READ k
+READ t
+
+## Test 19: Command Case Sensitivity (if applicable)
+create lowercase
+Create Mixedcase
+CREATE UPPERCASE
+
+## Test 20: Whitespace Handling
+CREATE    spaces   
+INSERT     spaces     content   with   spaces   
+READ spaces
+UPDATE    spaces    new    content   
+READ spaces
