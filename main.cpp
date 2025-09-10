@@ -3,65 +3,99 @@
 
 int main() {
     std::string line;
+    std::cout << "Version Control System" << std::endl;
+    std::cout << "Enter commands (Ctrl+D to exit):" << std::endl;
+    
     while (std::getline(std::cin, line)) {
+        // Skip empty lines
+        if (line.empty()) continue;
+        
         std::stringstream ss(line);
         std::string command;
         ss >> command;
-        if(command=="RECENT_FILES"){
-            int num;
-            ss>>num;
+        
+        // System-wide analytics commands
+        if (command == "RECENT_FILES") {
+            int num = 1; // Default value
+            ss >> num;
             syswide(modified_after, num);
             continue;
         }
-        else if (command == "BIGGEST_TREES"){
-            int num;
-            ss>>num;
+        else if (command == "BIGGEST_TREES") {
+            int num = 1; // Default value
+            ss >> num;
             syswide(has_more_versions, num);
             continue;
         }
-
+        
+        // File-specific commands
         std::string filename;
         ss >> filename;
-
-        if (command == "CREATE") CREATE(filename);
-        else{
-            active_file = filenameMap.find(filename);//lookup file* in hashmap
-            if(command == "READ"){
+        
+        if (command == "CREATE") {
+            CREATE(filename);
+        }
+        else {
+            // Find the file
+            active_file = filenameMap.find(filename);
+            
+            if (!active_file) {
+                std::cout << "Error: File '" << filename << "' not found" << std::endl;
+                continue;
+            }
+            
+            if (command == "READ") {
                 active_file->READ();
             }
             else if (command == "INSERT") {
                 std::string content;
-                getline(ss, content);
-                while (!content.empty() && content[0] == ' ') content = content.substr(1);
+                std::getline(ss, content);
+                // Remove leading space
+                if (!content.empty() && content[0] == ' ') {
+                    content = content.substr(1);
+                }
                 active_file->INSERT(content);
             }
-            else if(command == "UPDATE"){
+            else if (command == "UPDATE") {
                 std::string content;
-                getline(ss, content);
-                while (!content.empty() && content[0] == ' ') content = content.substr(1);
+                std::getline(ss, content);
+                // Remove leading space
+                if (!content.empty() && content[0] == ' ') {
+                    content = content.substr(1);
+                }
                 active_file->UPDATE(content);
             }
             else if (command == "SNAPSHOT") {
                 std::string message;
                 std::getline(ss, message);
-                if (!message.empty() && message[0] == ' ')
+                // Remove leading space
+                if (!message.empty() && message[0] == ' ') {
                     message = message.substr(1);
+                }
                 active_file->SNAPSHOT(message);
             }
-            else if (command == "ROLLBACK"){
-                int version_id_;
-                if(ss>>version_id_) active_file->ROLLBACK(version_id_);
-                else active_file->ROLLBACK();
+            else if (command == "ROLLBACK") {
+                int version_id;
+                if (ss >> version_id) {
+                    active_file->ROLLBACK(version_id);
+                } else {
+                    active_file->ROLLBACK();
+                }
             }
-            else if(command == "HISTORY"){
+            else if (command == "HISTORY") {
                 active_file->HISTORY();
             }
             else {
                 std::cout << "Unknown command: " << command << std::endl;
             }
-        } 
+        }
     }
+    
+    // Clean up
+    std::cout << "Cleaning up..." << std::endl;
     for (File* file_ptr : Allfiles) {
         delete file_ptr;
     }
+    
+    return 0;
 }

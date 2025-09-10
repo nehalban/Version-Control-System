@@ -3,137 +3,168 @@
 class Heap {
 private:
     std::vector<const File*> elements;
-    
-    // Comparator function pointer:
-    // For a MIN-heap, this should return true if (a > b)
-    // For a MAX-heap, this should return true if (a < b)
     bool (*comparator)(const File*, const File*);
-
-    // Helper functions to get parent and child indices
+    
     int parent(int i) { return (i - 1) / 2; }
     int leftChild(int i) { return 2 * i + 1; }
     int rightChild(int i) { return 2 * i + 2; }
-
-public:
-    // Constructor accepts the comparator function
-    Heap(bool (*comp)(const File*, const File*)) : comparator(comp) {}
-
-    // Inserts an element into the heap
-    void push(const File* value) {
-        elements.push_back(value);
-        int i = elements.size()-1;
+    
+    void heapifyUp(int i) {
         while (i > 0 && comparator(elements[parent(i)], elements[i])) {
-            // Swap element with its parent
-            const File* temp = elements[parent(i)];
-            elements[parent(i)] = elements[i];
-            elements[i] = temp;
+            std::swap(elements[i], elements[parent(i)]);
             i = parent(i);
         }
     }
-
-    // Removes the top element from the heap and returns it
+    
+    void heapifyDown(int i) {
+        int size = elements.size();
+        while (true) {
+            int largest = i;
+            int left = leftChild(i);
+            int right = rightChild(i);
+            
+            if (left < size && comparator(elements[largest], elements[left])) {
+                largest = left;
+            }
+            if (right < size && comparator(elements[largest], elements[right])) {
+                largest = right;
+            }
+            
+            if (largest != i) {
+                std::swap(elements[i], elements[largest]);
+                i = largest;
+            } else {
+                break;
+            }
+        }
+    }
+    
+public:
+    Heap(bool (*comp)(const File*, const File*)) : comparator(comp) {}
+    
+    void push(const File* value) {
+        elements.push_back(value);
+        heapifyUp(elements.size() - 1);
+    }
+    
     const File* pop() {
         if (elements.empty()) return nullptr;
-        const File* temp_ = elements[0];
+        
+        const File* result = elements[0];
         elements[0] = elements.back();
         elements.pop_back();
-        int ind = 0, priorityIndex;
-        int l = leftChild(ind);
-        int size_=elements.size();
-        while(l<size_){
-            if (comparator(elements[ind], elements[l])) {
-                priorityIndex = l;
-            }
-            int r = rightChild(ind);
-            if (r < size_ && comparator(elements[priorityIndex], elements[r])) {
-                priorityIndex = r;
-            }
-            if (ind != priorityIndex) {
-                // Swap with the child that has higher priority
-                const File* temp = elements[ind];
-                elements[ind] = elements[priorityIndex];
-                elements[priorityIndex] = temp;
-            }
-            ind = priorityIndex;
-            l=leftChild(ind);
+        
+        if (!elements.empty()) {
+            heapifyDown(0);
         }
-        return temp_;
+        
+        return result;
     }
-
-    const File* top() {
-        return elements[0];
+    
+    const File* top() const {
+        return elements.empty() ? nullptr : elements[0];
     }
     
     int size() const {
         return elements.size();
     }
-
-    // Checks if the heap is empty
+    
     bool empty() const {
         return elements.empty();
     }
 };
 
-class Dict{
-    static constexpr int N=10;
-    std::vector<std::vector<File*>> hashtable{N};
+class Dict {
+    static constexpr int N = 53; //Prime
+    std::vector<std::vector<File*>> hashtable;
+    
 public:
-    int hash(std::string key){
-        int hash=0;
-        for(char x:key) hash+=(int)x;
-        return hash%N;
+    Dict() : hashtable(N) {}
+    
+    int hash(std::string key) {
+        int hash_value = 0;
+        for (char c : key) {
+            hash_value = (hash_value * 31 + (int)c) % N;
+        }
+        return hash_value;
     }
-    void insert(File& A){
-        hashtable[hash(A.filename)].push_back(&A);
+    
+    void insert(File* file) {
+        if (file) {
+            hashtable[hash(file->filename)].push_back(file);
+        }
     }
-    File* find(std::string filename){
-        int ind = hash(filename);
-        for(File* file:hashtable[ind]){
-            if(file->filename == filename) return file;
+    
+    File* find(std::string filename) {
+        int index = hash(filename);
+        for (File* file : hashtable[index]) {
+            if (file && file->filename == filename) {
+                return file;
+            }
         }
         return nullptr;
     }
 };
 
-File* active_file;
+// Global variables
+File* active_file = nullptr;
 std::vector<File*> Allfiles;
 Dict filenameMap;
-void CREATE(std::string filename){
+
+void CREATE(std::string filename) {
+    // Check if file already exists
+    if (filenameMap.find(filename)) {
+        std::cout << "Error: File '" << filename << "' already exists" << std::endl;
+        return;
+    }
+    
     active_file = new File(filename);
     Allfiles.push_back(active_file);
-    filenameMap.insert(*active_file);
+    filenameMap.insert(active_file);
+    std::cout << "File '" << filename << "' created successfully" << std::endl;
 }
 
-bool modified_after(const File* A, const File* B){
-    return A->last_modified>B->last_modified;
-};
-bool has_more_versions(const File* A, const File* B){
-    return A->total_versions>B->total_versions;
-};
+// Comparator for RECENT_FILES (MIN heap - older files have lower priority)
+bool modified_after(const File* A, const File* B) {
+    return A->last_modified < B->last_modified;
+}
 
-void syswide(bool (*comp)(const File*A, const File* B), int num){
-    Heap H(comp);
-    if(num<=Allfiles.size()){
-        std::sort(Allfiles.begin(), Allfiles.end(), comp);
-        for(File* file:Allfiles) std::cout<<file->filename<<' ';
-        std::cout<<std::endl;
+// Comparator for BIGGEST_TREES (MIN heap - fewer versions have lower priority)
+bool has_more_versions(const File* A, const File* B) {
+    return A->total_versions < B->total_versions;
+}
+
+void syswide(bool (*comp)(const File* A, const File* B), int num) {
+    if (num <= 0) {
+        std::cout << "Error: Invalid number specified" << std::endl;
+        return;
     }
-    else{
-        for (int i = 0; i < num; i++){
+    
+    Heap H(comp);
+    
+    // Build a min-heap of size 'num' with the first 'num' files
+    for (size_t i = 0; i < Allfiles.size() && i < (size_t)num; i++) {
+        H.push(Allfiles[i]);
+    }
+    
+    // For remaining files, if better than min, replace min
+    for (size_t i = num; i < Allfiles.size(); i++) {
+        if (H.top() && !comp(Allfiles[i], H.top())) {
+            H.pop();
             H.push(Allfiles[i]);
         }
-        for (int i = num; i < Allfiles.size(); i++){
-            if(comp(Allfiles[i], H.top())){
-                H.pop();
-                H.push(Allfiles[i]);
-            }
-        }
-        for (int i = 0; i < num; i++)
-        {
-            std::cout<<H.pop()->filename<<' ';
-        }
-        std::cout<<std::endl;
-        
     }
+    
+    // Extract all elements and store in vector for reverse printing
+    std::vector<const File*> result;
+    while (!H.empty()) {
+        result.push_back(H.pop());
+    }
+    
+    // Print in descending order (reverse of min-heap extraction)
+    for (int i = result.size() - 1; i >= 0; i--) {
+        std::cout << result[i]->filename;
+        if (i > 0) std::cout << " ";
+    }
+    std::cout << std::endl;
 }
-
