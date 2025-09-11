@@ -112,7 +112,6 @@ std::vector<File*> Allfiles;
 Dict filenameMap;
 
 void CREATE(std::string filename) {
-    // Check if file already exists
     if (filenameMap.find(filename)) {
         std::cout << "Error: File '" << filename << "' already exists" << std::endl;
         return;
@@ -124,16 +123,17 @@ void CREATE(std::string filename) {
     std::cout << "File '" << filename << "' created successfully" << std::endl;
 }
 
-// Comparator for RECENT_FILES (MIN heap - older files have lower priority)
+//RECENTLY MODIFIED comparator
 bool modified_before(const File* A, const File* B) {
     return A->last_modified < B->last_modified;
 }
 
-// Comparator for BIGGEST_TREES (MIN heap - fewer versions have lower priority)
+//BIGGEST TREES comparator
 bool has_less_versions(const File* A, const File* B) {
     return A->total_versions < B->total_versions;
 }
 
+// general function for both RECENT_FILES and BIGGEST_TREES
 void syswide(bool (*comp)(const File* A, const File* B), int num) {
     if (num <= 0) {
         std::cout << "Error: Invalid number specified" << std::endl;
@@ -142,12 +142,10 @@ void syswide(bool (*comp)(const File* A, const File* B), int num) {
     
     Heap H(comp);
     
-    // Build a min-heap of size 'num' with the first 'num' files
     for (size_t i = 0; i < Allfiles.size() && i < (size_t)num; i++) {
         H.push(Allfiles[i]);
     }
     
-    // For remaining files, if better than min, replace min
     for (size_t i = num; i < Allfiles.size(); i++) {
         if (H.top() && comp(H.top(), Allfiles[i])) {
             H.pop();
@@ -155,14 +153,12 @@ void syswide(bool (*comp)(const File* A, const File* B), int num) {
         }
     }
     
-    // Extract all elements and store in vector for reverse printing
     std::vector<const File*> result;
     while (!H.empty()) {
         result.push_back(H.pop());
     }
-    
-    // Print in descending order (reverse of min-heap extraction)
-    for (int i = result.size() - 1; i >= 0; i--) {
+
+    for (int i = result.size() - 1; i >= 0; i--) { //descending order
         std::cout << result[i]->filename;
         if (i > 0) std::cout << " ";
     }

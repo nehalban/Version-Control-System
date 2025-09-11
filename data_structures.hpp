@@ -30,7 +30,7 @@ struct TreeNode {
     
     ~TreeNode() {
         for (TreeNode* child : children) {
-            delete child; // Recursive deletion
+            delete child;
         }
     }
 };

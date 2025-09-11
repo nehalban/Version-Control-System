@@ -4,7 +4,7 @@
 int main() {
     std::string line;
     std::cout << "Version Control System" << std::endl;
-    std::cout << "Enter commands (Ctrl+D to exit):" << std::endl;
+    std::cout << "Enter commands (Ctrl+Z to exit):" << std::endl;
     
     while (std::getline(std::cin, line)) {
         // Skip empty lines
@@ -14,21 +14,19 @@ int main() {
         std::string command;
         ss >> command;
         
-        // System-wide analytics commands
         if (command == "RECENT_FILES") {
-            int num = 1; // Default value
+            int num = 1; // Default value is 1
             ss >> num;
             syswide(modified_before, num);
             continue;
         }
         else if (command == "BIGGEST_TREES") {
-            int num = 1; // Default value
+            int num = 1; // Default value is 1
             ss >> num;
             syswide(has_less_versions, num);
             continue;
         }
         
-        // File-specific commands
         std::string filename;
         ss >> filename;
         
@@ -36,7 +34,6 @@ int main() {
             CREATE(filename);
         }
         else {
-            // Find the file
             active_file = filenameMap.find(filename);
             
             if (!active_file) {
@@ -50,7 +47,6 @@ int main() {
             else if (command == "INSERT") {
                 std::string content;
                 std::getline(ss, content);
-                // Remove leading space
                 if (!content.empty() && content[0] == ' ') {
                     content = content.substr(1);
                 }
@@ -59,7 +55,6 @@ int main() {
             else if (command == "UPDATE") {
                 std::string content;
                 std::getline(ss, content);
-                // Remove leading space
                 if (!content.empty() && content[0] == ' ') {
                     content = content.substr(1);
                 }
@@ -68,7 +63,6 @@ int main() {
             else if (command == "SNAPSHOT") {
                 std::string message;
                 std::getline(ss, message);
-                // Remove leading space
                 if (!message.empty() && message[0] == ' ') {
                     message = message.substr(1);
                 }
@@ -90,9 +84,8 @@ int main() {
             }
         }
     }
-    
-    // Clean up
-    std::cout << "Cleaning up..." << std::endl;
+
+    // Deallocate memory
     for (File* file_ptr : Allfiles) {
         delete file_ptr;
     }

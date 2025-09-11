@@ -10,14 +10,13 @@ struct File {
     int total_versions = 0;
     
     File(std::string filename_) : filename(filename_), last_modified(time(0)) {
-        // Create root version with ID 0
+        // Create root
         root = new TreeNode(0, "", nullptr);
         total_versions = 1;
         version_map.insert(root);
         active_version = root;
         
-        // Root should be automatically snapshotted according to spec
-        root->snapshot("Initial version");
+        root->snapshot("Initial version"); // Root is snapshot
     }
     
     TreeNode* new_version(std::string content = "", TreeNode* parent = nullptr) {
@@ -44,10 +43,8 @@ struct File {
         }
         
         if (active_version->is_snapshot()) {
-            // Create new version as child of current
             new_version(content, active_version);
         } else {
-            // Modify in place
             active_version->content = content;
             last_modified = time(0);
         }
@@ -107,7 +104,6 @@ struct File {
         std::vector<TreeNode*> path;
         TreeNode* temp = active_version;
         
-        // Traverse from active to root, collecting snapshots
         while (temp) {
             if (temp->is_snapshot()) {
                 path.push_back(temp);
@@ -115,15 +111,12 @@ struct File {
             temp = temp->parent;
         }
         
-        // Print in chronological order (root to active)
         for (int i = path.size() - 1; i >= 0; i--) {
-            std::cout << "Version " << path[i]->version_id 
-                     << " | Time: " << path[i]->snapshot_timestamp 
-                     << " | Message: " << path[i]->message << std::endl;
+            std::cout << "Version " << path[i]->version_id << " | Time: " << path[i]->snapshot_timestamp << " | Message: " << path[i]->message << std::endl;
         }
     }
     
     ~File() {
-        delete root; // This triggers recursive deletion of all nodes
+        delete root;
     }
 };
