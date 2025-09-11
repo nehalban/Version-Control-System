@@ -15,10 +15,10 @@ Make the script executable and run. Open a terminal, navigate to the project dir
    chmod +x run.sh
    ./run.sh
    ```
-   This starts the program. You can now enter commands interactively and use Ctrl+D to exit.
+   This starts the program. You can now enter commands interactively and use Ctrl+Z to exit.
 
 ### Manual method
-If you prefer to compile manually, run the following to compile the code:
+If you prefer to compile manually, run the following in bash terminal:
 ```bash
 g++ -Wall -Wextra -O2 -o vcs main.cpp
 ```
@@ -32,7 +32,7 @@ To take input from a text file {Replace input.txt with your filename} :
 ```
 
 ## Data structures and Classes
-I implemented all core data structures from scratch. The following custom structures were used:
+All core data structures are implemented from scratch. The following custom structures were used:
 ### Tree (TreeNode)
 Manages the branching version history for each file. Each version of a file is represented as a node in tree.
 
@@ -71,6 +71,9 @@ Efficiently finds the top 'k' files for system-wide analytics commands without n
 *   **`compile_and_run.sh` :** Automated compilation and execution script.
 
 # Command Reference
+
+#### `EXIT`
+Terminates the program.
 
 ## Core File Operations
 These are methods of `File` class:

@@ -4,7 +4,7 @@
 int main() {
     std::string line;
     std::cout << "Version Control System" << std::endl;
-    std::cout << "Enter commands (Ctrl+Z to exit):" << std::endl;
+    std::cout << "Enter commands:" << std::endl;
     
     while (std::getline(std::cin, line)) {
         // Skip empty lines
@@ -13,8 +13,9 @@ int main() {
         std::stringstream ss(line);
         std::string command;
         ss >> command;
-        
-        if (command == "RECENT_FILES") {
+
+        if(command=="EXIT") break;
+        else if (command == "RECENT_FILES") {
             int num = 1; // Default value is 1
             ss >> num;
             syswide(modified_before, num);
