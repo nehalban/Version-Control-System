@@ -10,7 +10,7 @@ private:
     int rightChild(int i) { return 2 * i + 2; }
     
     void heapifyUp(int i) {
-        while (i > 0 && comparator(elements[parent(i)], elements[i])) {
+        while (i > 0 && comparator(elements[i], elements[parent(i)])) {
             std::swap(elements[i], elements[parent(i)]);
             i = parent(i);
         }
@@ -22,11 +22,11 @@ private:
             int largest = i;
             int left = leftChild(i);
             int right = rightChild(i);
-            
-            if (left < size && comparator(elements[largest], elements[left])) {
+
+            if (left < size && comparator(elements[left], elements[largest])) {
                 largest = left;
             }
-            if (right < size && comparator(elements[largest], elements[right])) {
+            if (right < size && comparator(elements[right], elements[largest])) {
                 largest = right;
             }
             
@@ -125,12 +125,12 @@ void CREATE(std::string filename) {
 }
 
 // Comparator for RECENT_FILES (MIN heap - older files have lower priority)
-bool modified_after(const File* A, const File* B) {
+bool modified_before(const File* A, const File* B) {
     return A->last_modified < B->last_modified;
 }
 
 // Comparator for BIGGEST_TREES (MIN heap - fewer versions have lower priority)
-bool has_more_versions(const File* A, const File* B) {
+bool has_less_versions(const File* A, const File* B) {
     return A->total_versions < B->total_versions;
 }
 
@@ -149,7 +149,7 @@ void syswide(bool (*comp)(const File* A, const File* B), int num) {
     
     // For remaining files, if better than min, replace min
     for (size_t i = num; i < Allfiles.size(); i++) {
-        if (H.top() && !comp(Allfiles[i], H.top())) {
+        if (H.top() && comp(H.top(), Allfiles[i])) {
             H.pop();
             H.push(Allfiles[i]);
         }

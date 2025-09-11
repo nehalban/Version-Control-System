@@ -18,13 +18,13 @@ int main() {
         if (command == "RECENT_FILES") {
             int num = 1; // Default value
             ss >> num;
-            syswide(modified_after, num);
+            syswide(modified_before, num);
             continue;
         }
         else if (command == "BIGGEST_TREES") {
             int num = 1; // Default value
             ss >> num;
-            syswide(has_more_versions, num);
+            syswide(has_less_versions, num);
             continue;
         }
         
