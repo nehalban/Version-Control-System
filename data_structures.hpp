@@ -5,10 +5,10 @@
 struct TreeNode {
     int version_id;
     std::string content;
-    std::string message; // Empty if not a snapshot
+    TreeNode* parent;
     time_t created_timestamp;
     time_t snapshot_timestamp; // 0 if not a snapshot
-    TreeNode* parent;
+    std::string message; // Empty if not a snapshot
     std::vector<TreeNode*> children;
     
     TreeNode(int version_id_, std::string content_="", TreeNode* parent_=nullptr)
